@@ -1,0 +1,270 @@
+{
+  "name": "Invoice Data Extraction",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Extract the invoice information from the text below and return ONLY raw valid JSON (no markdown formatting or code blocks):\n\n{\n  \"company_name\": \"...\",\n  \"invoice_number\": \"...\",\n  \"invoice_date\": \"...\",\n  \"due_date\": \"...\",\n  \"billed_to\": \"...\",\n  \"description\": \"...\",\n  \"qty\": 1,\n  \"total_amount\": \"...\"\n}\n\nInvoice Text:\n{{ $node[\"Extract from File\"].json.text }}",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        112,
+        -64
+      ],
+      "id": "e3720398-9cfa-4800-ab11-62c53fbe6674",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "formTitle": "AI Invoice Data Extraction",
+        "formDescription": "Upload an invoice PDF to extract invoice details.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Invoice PDF",
+              "fieldType": "file"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.6,
+      "position": [
+        -672,
+        -96
+      ],
+      "id": "46521c48-b060-4ad0-b0b8-0e1569f1d91d",
+      "name": "On form submission",
+      "webhookId": "10ade3f3-b9ae-4aca-acff-b7828510995d"
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "binaryPropertyName": "Invoice_PDF",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        -336,
+        -80
+      ],
+      "id": "ec0b3eab-bdfb-4986-9196-d71b2d09ee91",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.2,
+      "position": [
+        64,
+        176
+      ],
+      "id": "56e626be-4195-4bd9-ad3d-b73c3b66b410",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "o8TTvydsaMJtMp7z",
+          "name": "Google Gemini(PaLM) Api account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1OSI_FOB9_U1FXVetkO1zHDM4y2ZujrBjnN3URk138Hk/edit",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1OSI_FOB9_U1FXVetkO1zHDM4y2ZujrBjnN3URk138Hk/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Supplier Name / Comp Name": "={{ JSON.parse($json.output).company_name }}",
+            "Due Date": "={{ JSON.parse($json.output).due_date }}",
+            "Invoice Number": "={{ JSON.parse($json.output).invoice_number }}",
+            "Invoice Date": "={{ JSON.parse($json.output).invoice_date }}",
+            "Billed To": "={{ JSON.parse($json.output).billed_to }}",
+            "Description": "={{ JSON.parse($json.output).description }}",
+            "QTY": "={{ JSON.parse($json.output).qty }}",
+            "Total Amount": "={{ JSON.parse($json.output).total_amount }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Supplier Name / Comp Name",
+              "displayName": "Supplier Name / Comp Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Invoice Number",
+              "displayName": "Invoice Number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Invoice Date",
+              "displayName": "Invoice Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Due Date",
+              "displayName": "Due Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Billed To",
+              "displayName": "Billed To",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Description",
+              "displayName": "Description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "QTY",
+              "displayName": "QTY",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Total Amount",
+              "displayName": "Total Amount",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        480,
+        -64
+      ],
+      "id": "cadbdec6-0bb9-4b31-8888-39b29b30b9c3",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "lhHroLZZcN1OvfEC",
+          "name": "Google Sheets account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "c3f28060-a61a-490c-a206-677ce4f2f576",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "9287ef3de7790988b317680626b91dd2efe9dcfe50f7ab827361789d31b2b0fc"
+  },
+  "nodeGroups": [],
+  "id": "at9mqHjqS6Gbdv4H",
+  "tags": []
+}

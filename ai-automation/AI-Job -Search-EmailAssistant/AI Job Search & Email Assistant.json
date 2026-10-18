@@ -1,0 +1,183 @@
+{
+  "name": "AI Job Search & Email Assistant",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.5,
+      "position": [
+        -1328,
+        -256
+      ],
+      "id": "a0b193c3-546c-416a-856e-515d001f79ee",
+      "name": "When chat message received",
+      "webhookId": "bfc8c410-a8aa-470f-acc1-ff9a7de67856"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -1056,
+        -272
+      ],
+      "id": "7f02da82-044f-4188-8fad-f50dcc3084f4",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [
+        -1056,
+        0
+      ],
+      "id": "2383f070-85ea-4ad7-8995-8b9d258198fb",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "operation": "google_jobs",
+        "q": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Search_Query__q_', ``, 'string') }}",
+        "additionalFields": {},
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-serpapi.serpApiTool",
+      "typeVersion": 1,
+      "position": [
+        -896,
+        0
+      ],
+      "id": "f926d3af-d37a-41c8-939a-5c21b3565679",
+      "name": "Google_jobs search in SerpApi",
+      "credentials": {
+        "serpApi": {
+          "id": "blZXe1kT67LczaOl",
+          "name": "SerpApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $fromAI('To', 'Recipient email address extracted from user prompt', 'string').replace(/^[^a-zA-Z0-9]+/, '').trim() }}",
+        "subject": "={{ $fromAI('Subject', ``, 'string') }}",
+        "message": "=={{ $fromAI('Message', 'The full email body formatted in clean HTML containing job titles, company names, salary, and apply buttons', 'string').replace(/^=\\s*/, '') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.2,
+      "position": [
+        -624,
+        -16
+      ],
+      "id": "a8a80bad-608a-47cb-82b1-77e508e5dc87",
+      "name": "Send a message in Gmail",
+      "webhookId": "6480be5f-c0c5-4379-afca-ea7f58a55d25",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "58j8PZ9rtwbs5FFf",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.2,
+      "position": [
+        -1168,
+        -16
+      ],
+      "id": "a9be4770-3992-4b51-b496-07bc9fe346df",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "o8TTvydsaMJtMp7z",
+          "name": "Google Gemini(PaLM) Api account 3"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google_jobs search in SerpApi": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        []
+      ]
+    },
+    "Send a message in Gmail": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "f662296e-64b3-40d8-8dd0-ed00340e924c",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "9287ef3de7790988b317680626b91dd2efe9dcfe50f7ab827361789d31b2b0fc"
+  },
+  "nodeGroups": [],
+  "id": "9moHUIhgkkTMVzRk",
+  "tags": []
+}
