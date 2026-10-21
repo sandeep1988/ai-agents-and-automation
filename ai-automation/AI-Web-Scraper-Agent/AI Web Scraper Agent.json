@@ -1,0 +1,126 @@
+{
+  "name": "AI Web Scraper Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "=define",
+        "text": "=Scrape the content from this URL and summarize the main points: {{ $json.URL }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        224,
+        0
+      ],
+      "id": "6b0a50a9-8792-4868-b0c9-107431aebeb5",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3.1-flash-lite",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.2,
+      "position": [
+        192,
+        256
+      ],
+      "id": "cd4f3531-7270-44a1-8248-9096f15f3adf",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "nwyDuZdiJFjNcVyS",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "description": "=Scrape the content from this URL and summarize the main points: {{ $json.URL }}\nWhen calling the scrape tool, pass only the clean web address starting with http:// or https://.",
+        "jsCode": "try {\n  // 1. Read input safely from the AI Agent\n  let rawInput = $fromAI('url', 'The full web URL to scrape') || '';\n\n  // 2. Extract valid HTTP/HTTPS URL\n  const urlMatch = rawInput.match(/https?:\\/\\/[^\\s\"'<>]+/i);\n  if (!urlMatch) {\n    return `Error: No valid URL found in input: \"${rawInput}\"`;\n  }\n\n  let cleanUrl = urlMatch[0].replace(/[.,;)]+$/, '');\n\n  // 3. Perform native HTTP fetch\n  const response = await fetch(cleanUrl, {\n    method: 'GET',\n    redirect: 'follow',\n    headers: {\n      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36'\n    }\n  });\n\n  if (!response.ok) {\n    return `HTTP Error ${response.status}: Unable to fetch ${cleanUrl}`;\n  }\n\n  const text = await response.text();\n\n  // 4. Strip scripts, styles, and HTML tags\n  const cleanText = text\n    .replace(/<script\\b[^<]*(?:(?!<\\/script>)<[^<]*)*<\\/script>/gi, '')\n    .replace(/<style\\b[^<]*(?:(?!<\\/style>)<[^<]*)*<\\/style>/gi, '')\n    .replace(/<[^>]+>/g, ' ')\n    .replace(/\\s+/g, ' ')\n    .trim();\n\n  return cleanText.slice(0, 4000) || \"Page fetched, but no text content found.\";\n\n} catch (error) {\n  return `Failed to scrape webpage: ${error.message}`;\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolCode",
+      "typeVersion": 1.3,
+      "position": [
+        384,
+        240
+      ],
+      "id": "1ff0f5d0-917c-4a73-ae7d-2b81c82b2ea3",
+      "name": "Code Tool"
+    },
+    {
+      "parameters": {
+        "formTitle": "URL  Scrape",
+        "formDescription": "=The submission form will pass your submitted web link into {{ $json.url }} for the AI Agent",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "URL"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.6,
+      "position": [
+        -176,
+        -16
+      ],
+      "id": "2c7202f5-e10e-47b3-a265-077f40c4fe82",
+      "name": "On form submission",
+      "webhookId": "d7d7a186-312f-40c5-a119-f08165ade1bd"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "303cec10-3c4c-4b69-86e9-7899d1097fbd",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "9287ef3de7790988b317680626b91dd2efe9dcfe50f7ab827361789d31b2b0fc"
+  },
+  "nodeGroups": [],
+  "id": "BDIjNaWRxySMz35t",
+  "tags": []
+}

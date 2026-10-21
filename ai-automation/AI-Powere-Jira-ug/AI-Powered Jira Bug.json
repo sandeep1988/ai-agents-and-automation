@@ -1,0 +1,150 @@
+{
+  "name": "AI-Powered Jira Bug",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.5,
+      "position": [
+        -112,
+        -16
+      ],
+      "id": "ffd73d23-05a8-434b-a981-61276c6c114e",
+      "name": "When chat message received",
+      "webhookId": "162abf9f-09dc-41f6-9bca-bd6ca2cd7dfd"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "You are a professional QA Lead. When a bug report is provided, extract and structure the details for Jira ticket creation using clean Jira Markdown format.\n\nAlways format the bug output using this structure:\n\nh2. Bug Summary\n*URL:* [URL]\n*Environment:* QA / Staging\n\nh2. Description & Steps to Reproduce\n1. Go to [URL]\n2. Enter credentials and click Submit.\n3. Observe the error.\n\nh2. Results\n*Expected Result:* User should be logged in successfully.\n*Actual Result:* [Error Message]\n\nh2. Additional Details\n*Severity:* High / Medium\n*Reported By:* QA Automation Agent"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        176,
+        -32
+      ],
+      "id": "bed0282b-d001-4981-86e0-2ca888c87a65",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "project": {
+          "__rl": true,
+          "value": "10001",
+          "mode": "list",
+          "cachedResultName": "My Software Team"
+        },
+        "issueType": {
+          "__rl": true,
+          "value": "10008",
+          "mode": "list",
+          "cachedResultName": "Task"
+        },
+        "summary": "={{ $json.summary || \"Login failure on QA server ww.abc.com/sign_in\" }}",
+        "additionalFields": {
+          "description": "={{ $json.output }}",
+          "priority": {
+            "__rl": true,
+            "value": "2",
+            "mode": "list",
+            "cachedResultName": "High"
+          }
+        }
+      },
+      "type": "n8n-nodes-base.jira",
+      "typeVersion": 1,
+      "position": [
+        672,
+        176
+      ],
+      "id": "d9b02467-7792-4751-b616-cc19c002860c",
+      "name": "Create an issue",
+      "credentials": {
+        "jiraSoftwareCloudApi": {
+          "id": "novEj0WManf8QFCM",
+          "name": "Jira SW Cloud account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        48,
+        176
+      ],
+      "id": "06ade05d-c998-4df3-b224-ccb579e9773a",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": null,
+          "name": "",
+          "__aiGatewayManaged": true
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Create an issue",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "3810dece-cb1c-42ff-8f62-04f449abbb98",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "9287ef3de7790988b317680626b91dd2efe9dcfe50f7ab827361789d31b2b0fc"
+  },
+  "nodeGroups": [],
+  "id": "eI3R7zDUH8Zhroik",
+  "tags": []
+}
