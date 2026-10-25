@@ -1,0 +1,151 @@
+{
+  "name": "Weather Log",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 2
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -1136,
+        -32
+      ],
+      "id": "945fb0a5-0086-4dbc-8d20-2998afa8d8b2",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "url": "https://mockingbird.n8n.io/v1/weather/berlin",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        -880,
+        -32
+      ],
+      "id": "ac3ae040-3a81-40b7-b0fb-6d6bd5ba013b",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d8262b50-3863-4072-bc76-7756511dedbe",
+              "name": "report",
+              "value": "=The temperature in {{ $json.city }} is {{ $json.temp_c }}°C.The temperature in {{ $json.city }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        -608,
+        -32
+      ],
+      "id": "cd262acb-48b6-40b2-9c1b-3e810357bad6",
+      "name": "Format Weather Message1"
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "PjZH8Fv4gg90H2SG",
+          "mode": "list",
+          "cachedResultName": "weather_data",
+          "cachedResultUrl": "/projects/XZBLB05OoTBiRuZh/datatables/PjZH8Fv4gg90H2SG"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [
+            "report"
+          ],
+          "schema": [
+            {
+              "id": "report",
+              "displayName": "report",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        -320,
+        -32
+      ],
+      "id": "9e332e8a-07ec-4a95-a2f0-86f5e9daadc6",
+      "name": "Save Weather"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Format Weather Message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Weather Message1": {
+      "main": [
+        [
+          {
+            "node": "Save Weather",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "8ef12f65-9586-4b82-a0a2-94c23d4b6f57",
+  "meta": {
+    "instanceId": "9287ef3de7790988b317680626b91dd2efe9dcfe50f7ab827361789d31b2b0fc"
+  },
+  "nodeGroups": [],
+  "id": "vQgreGyWV1kV6tgx",
+  "tags": []
+}
