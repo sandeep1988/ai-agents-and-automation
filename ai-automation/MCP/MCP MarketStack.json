@@ -1,0 +1,70 @@
+{
+  "name": "MCP MarketStack",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "44915763-0481-437e-9451-0595d5f2f44a",
+        "instructions": "Use this tool to get End-of-Day stock data. Required inputs: Ticker (symbols), and specify whether to fetch the latest data or pass date_from and date_to parameters."
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpTrigger",
+      "typeVersion": 2.1,
+      "position": [
+        -528,
+        -64
+      ],
+      "id": "f249b19f-1cd3-4d9c-8cc3-8067ad5a38d1",
+      "name": "MCP Server Trigger",
+      "webhookId": "44915763-0481-437e-9451-0595d5f2f44a"
+    },
+    {
+      "parameters": {
+        "symbols": "={{ $fromAI('Ticker', 'Stock ticker symbol or company symbol e.g. MSFT or AAPL', 'string') }}",
+        "limit": 1,
+        "filters": {
+          "latest": true
+        }
+      },
+      "type": "n8n-nodes-base.marketstackTool",
+      "typeVersion": 1,
+      "position": [
+        -528,
+        160
+      ],
+      "id": "b1d4679f-8f9d-4eab-9538-02398f4acd7f",
+      "name": "Get many EoD data in Marketstack",
+      "credentials": {
+        "marketstackApi": {
+          "id": "mIy8ftY1WEZetBHo",
+          "name": "Marketstack account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Get many EoD data in Marketstack": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "bd6d9f6f-3efd-49d8-93ff-78f2ccec28aa",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6401c276c9d0e6a689167f4577bc02e081bab091f74f9ad7ebbab7f615fa4c4b"
+  },
+  "nodeGroups": [],
+  "id": "zDki4D3pk56Bl4h4",
+  "tags": []
+}

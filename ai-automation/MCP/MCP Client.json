@@ -1,0 +1,117 @@
+{
+  "name": "MCP Client",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.5,
+      "position": [
+        -480,
+        -64
+      ],
+      "id": "c8760fa5-b194-435b-991a-f02457d051ec",
+      "name": "When chat message received",
+      "webhookId": "8e98aeb5-3eac-4a55-9dc0-dd6d00a3bb8e"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "You are a helpful assistant, use tool to present to user request question"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -256,
+        -64
+      ],
+      "id": "f4d2b1cc-1358-45ce-920f-4587cb53bacc",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAlibabaCloud",
+      "typeVersion": 1.1,
+      "position": [
+        -256,
+        176
+      ],
+      "id": "7794ed73-047b-44b5-8653-6cb4a24f6e41",
+      "name": "Qwen Cloud Chat Model",
+      "credentials": {
+        "alibabaCloudApi": {
+          "id": null,
+          "name": "",
+          "__aiGatewayManaged": true
+        }
+      }
+    },
+    {
+      "parameters": {
+        "endpointUrl": "https://sandeepchourey.app.n8n.cloud/mcp/44915763-0481-437e-9451-0595d5f2f44a",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1.4,
+      "position": [
+        -128,
+        176
+      ],
+      "id": "a0c92fef-f4c8-4114-8fbb-040ceb11b541",
+      "name": "MCP Client"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Qwen Cloud Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MCP Client": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "707bf9b1-e6f9-498b-8cc3-62bac6a454ef",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6401c276c9d0e6a689167f4577bc02e081bab091f74f9ad7ebbab7f615fa4c4b"
+  },
+  "nodeGroups": [],
+  "id": "mnpW5L8MVeXAfyoF",
+  "tags": []
+}
